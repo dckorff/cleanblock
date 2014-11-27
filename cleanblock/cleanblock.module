@@ -1,0 +1,73 @@
+<?php
+
+
+// Define a block and give it a name
+function cleanblock_block_info() {
+  $blocks['cleanblock_block'] = array(
+
+  	// This will be the name of the block that will appear in Drupal config screens:
+    'info' => t('CleanBlock')
+
+  );
+  return $blocks;
+}
+
+// This runs whenver drupal tries to load any block, so we'll see if it's trying to load our block
+// and if it is then tell drupal what to do with it
+function cleanblock_block_view($delta = '') {
+  
+  //The $delta parameter tells us which block is being requested.  
+  switch ($delta) {
+    case 'cleanblock_block':
+    	return GetCleanBlock();
+  }
+  
+}
+
+// This is where we define a template and tell drupal a little about it
+function cleanblock_theme($existing, $type, $theme, $path){
+  return array(
+
+    // This is the variable name of the template    
+    'cleanblock_template' => array( 
+
+      // This is the name of the variable that will be sent to the template
+      // you can reference it in the template like so: $variables['elements']      
+      'render element' => 'elements',
+
+      // This where you say what file to use for the template
+      // It will match a file named "cleanblock_template_file.tpl.php"
+      'template' => 'cleanblock_template_file',
+    ),
+  );
+}
+
+// Generate the block:
+// This is where we'll setup a datamodel, and send out to the template
+function GetCleanBlock() {
+	
+	// Here you can setup any objects/data you like	
+	$dataModel = GetMyData();
+    
+  // This is where we setup our block
+  // We tell it what template/view to use and what data is going out with it
+  $block['content'][] = array(
+
+  	//This is the template/view we're going to output to
+    '#theme' => 'cleanblock_template', 
+
+    // This is an object/model we're sending to the template/view
+    // (it doesn't need named viewbag, and there can be more than on value)
+    // In the template we can reference this value like so: $variables['elements']['#viewbag']
+    '#viewbag' => $dataModel, 
+	);
+
+	return $block;
+
+}
+
+function GetMyData(){
+  $datamodel = new stdClass();
+  $datamodel->SomeProperty = "some objects or arrays or whatever";
+  return $datamodel;
+}
